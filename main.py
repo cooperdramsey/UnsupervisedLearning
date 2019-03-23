@@ -182,13 +182,13 @@ def reconstruction_error(X_train=None, X_projected=None, X=None, algo=None):
 
 # Choose which parts to run
 run_clustering = False
-run_dim_reduction = True
+run_dim_reduction = False
 run_clustering_on_dim_data = False
 run_NN_on_dim_data = False
 run_NN_on_clusters = False
 
 # select data set
-data_set = 'wine'  # data set can be either wine or loan
+data_set = 'loan'  # data set can be either wine or loan
 
 if __name__ == '__main__':
     # Load data
@@ -200,7 +200,6 @@ if __name__ == '__main__':
     X, y = load_data(data_path)
 
     # Data normalization
-    #X = MinMaxScaler().fit_transform(X)
     X = normalize(X)
 
     # Cluster algorithms (K-means, EM)
@@ -305,27 +304,27 @@ if __name__ == '__main__':
         print("Mutual Info Score: {0:.3f}".format(mutual_info_score(kmeans_labels, em_labels)))
 
     if run_dim_reduction:
-        pass
         # Dim reduction Show projections. Visual just the first few components.
         # Are these projections meaningful? Why or why not?
 
         # PCA (pca_data)  #plot the eigen values to know what to drop
         # num components remains same as you increase number
-        pca = PCA()
+        pca = PCA(random_state=10)
         pca.fit(X)
         pca_X = pca.transform(X)
         pca_reconst = pca.inverse_transform(pca_X)
         e_values = pca.explained_variance_
         num_components = range(1, pca.n_components_ + 1)
+        # num_components = range(1, 11)
 
         plt.title('PCA Components vs Eigenvalues')
         plt.xlabel('Num Components')
         plt.ylabel('E-Values')
         plt.scatter(num_components, e_values)
         plt.show()
-        # Compare X and pca_X
 
-        print('PCA Reconstruction Error: {0:.6f}'.format(reconstruction_error(pca_X, pca_reconst)))
+        # print('PCA Reconstruction Error: {0:.6f}'.format(reconstruction_error(pca_X, pca_reconst)))
+        print('PCA Reconstruction Error: {0:.6f}'.format(reconstruction_error(None, None, X, pca)))
 
         # ICA (ica_data) # plot kurtosis values
         # the number of components has an impact on the outputs. How good is each k for ICA?
@@ -340,6 +339,7 @@ if __name__ == '__main__':
         kurtosis_vals = kurtosis(ica_X)
         kurtosis_vals = -np.sort(-kurtosis_vals)
         num_components = range(1, ica_X.shape[1] + 1)
+        # num_components = range(1, 13)
 
         plt.title('ICA Components vs Kurtosis')
         plt.xlabel('Num Components')
@@ -347,61 +347,90 @@ if __name__ == '__main__':
         plt.scatter(num_components, kurtosis_vals)
         plt.show()
 
-        print('ICA Reconstruction Error: {0:.6f}'.format(reconstruction_error(ica_X, ica_reconst)))
+        #print('ICA Reconstruction Error: {0:.6f}'.format(reconstruction_error(ica_X, ica_reconst)))
+        print('ICA Reconstruction Error: {0:.6f}'.format(reconstruction_error(None, None, X, ica)))
+
 
         # Random Projections (rp_data) reconstruction error
-        error = []
-        for i in range(1, X.shape[1] + 1):
-            rp = SparseRandomProjection(random_state=10, n_components=i)
-            rp.fit(X)
-            #rp_X = rp.transform(X)
-            #num_components = range(1, ica_X.shape[1] + 1)
-            error.append(reconstruction_error(None, None, X, rp))
+        # errors = []
+        # for _ in range(1, 101):
+        #     error = []
+        #     for i in range(1, X.shape[1] + 1):
+        #         rp = SparseRandomProjection(n_components=i)
+        #         rp.fit(X)
+        #         error.append(reconstruction_error(None, None, X, rp))
+        #     errors.append(error)
+        #
+        # plt.title('RP Components vs AVG Reconstruction Error')  # Over 100 runs
+        # plt.xlabel('Num Components')
+        # plt.ylabel('AVG Error')
+        # plt.plot(range(1, X.shape[1] + 1), np.average(errors, axis=0))
+        # plt.show()
 
-        plt.title('RP Components vs Reconstruction Error')
-        plt.xlabel('Num Components')
-        plt.ylabel('Error')
-        plt.plot(range(1, X.shape[1] + 1), error)
+        for _ in range(1, 101):
+            error = []
+            for i in range(1, X.shape[1] + 1):
+                rp = SparseRandomProjection(n_components=i)
+                rp.fit(X)
+                error.append(reconstruction_error(None, None, X, rp))
+
+            plt.title('RP Components vs Reconstruction Error')  # Over 100 runs
+            plt.xlabel('Num Components')
+            plt.ylabel('Error')
+            plt.plot(range(1, X.shape[1] + 1), error)
         plt.show()
-
-        #print('RP Reconstruction Error: {0:.6f}'.format(reconstruction_error(rp_X, None, X, rp)))
 
         # Factor Analysis
         fa = FactorAnalysis(random_state=10, svd_method='randomized')
         fa.fit(X)
         fa_X = fa.transform(X)
-        num_components = range(1, ica_X.shape[1] + 1)
-        noise_variance =fa.noise_variance_
-        noise_variance = -np.sort(-noise_variance)
+        num_components = range(1, fa_X.shape[1] + 1)
+        #num_components = range(1, 15)
+        variance = fa.noise_variance_
+        variance = -np.sort(-variance)
+
+        print('FA Reconstruction Error: {0:.6f}'.format(reconstruction_error(None, None, X, fa)))
 
         plt.title('FA Components vs Noise Variance')
         plt.xlabel('Num Components')
         plt.ylabel('Noise Variance')
-        plt.scatter(num_components, noise_variance)
+        plt.scatter(num_components, variance)
         plt.show()
 
-        # Non-Negative Matrix Factorization
-        # error = []
-        # for i in range(1, X.shape[1] + 1):
-        #     lda = LatentDirichletAllocation(random_state=10, n_components=i)
-        #     lda.fit(X)
-        #     error.append(reconstruction_error(None, None, X, lda))
-        #     # nmf = NMF(random_state=10, n_components=i)
-        #     # nmf.fit(X)
-        #     # #rp_X = nmf.transform(X)
-        #     # #num_components = range(1, ica_X.shape[1] + 1)
-        #     # error.append(nmf.reconstruction_err_)
-
-        # plt.title('LDA Components vs Reconstruction Error')
-        # plt.xlabel('Num Components')
-        # plt.ylabel('Error')
-        # plt.plot(range(1, X.shape[1] + 1), error)
-        # plt.show()
-
     if run_clustering_on_dim_data:
-        pass
         # Clustering on Reduced data (This will be eight combinations 4 dim reduction, 2 clusters)
         # what clusters did I get? Compare with the same clusters from part one
+        # PCA
+        if data_set == 'wine':
+            n_comp = 5
+        else:
+            n_comp = 10
+        pca = PCA(random_state=10, n_components=n_comp)
+        pca_X = pca.fit_transform(X)
+
+        #ICA
+        if data_set == 'wine':
+            n_comp = 6
+        else:
+            n_comp = 12
+        ica = FastICA(random_state=10, n_components=n_comp)
+        ica_X = ica.fit_transform(X)
+
+        # RP
+        if data_set == 'wine':
+            n_comp = 7
+        else:
+            n_comp = 14
+        sp = SparseRandomProjection(n_components=n_comp)
+        sp_X = sp.fit_transform(X)
+
+        # FA
+        if data_set == 'wine':
+            n_comp = 6
+        else:
+            n_comp = 14
+        fa = FactorAnalysis(n_components=n_comp)
+        fa_X = fa.fit_transform(X)
 
     if run_NN_on_dim_data:
         # Make sure to hold out a test set for this part
