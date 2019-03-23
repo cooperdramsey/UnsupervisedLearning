@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="bcd22c72-97cc-457b-a145-26c60a9543c7" name="Default Changelist" comment="" />
+    <list default="true" id="bcd22c72-97cc-457b-a145-26c60a9543c7" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,24 +16,18 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="511">
-              <caret line="268" column="75" lean-forward="true" selection-start-line="268" selection-start-column="75" selection-end-line="268" selection-end-column="75" />
+            <state relative-caret-position="680">
+              <caret line="190" column="16" selection-start-line="190" selection-start-column="16" selection-end-line="190" selection-end-column="16" />
               <folding>
                 <element signature="e#0#43#0" expanded="true" />
-                <element signature="e#577#673#0" />
-                <element signature="e#713#835#0" />
-                <element signature="e#1661#5127#0" />
-                <element signature="e#5200#6448#0" />
+                <element signature="e#1040#1341#0" />
+                <element signature="e#1676#5142#0" />
+                <element signature="e#5207#6375#0" />
+                <element signature="e#7098#10293#0" />
+                <element signature="e#11217#11400#0" />
+                <element signature="e#11385#11896#0" />
+                <element signature="e#11933#12342#0" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/Anaconda3/envs/UnsupervisedLearning/Lib/site-packages/matplotlib/axis.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="246">
-              <caret line="1662" selection-start-line="1662" selection-end-line="1662" />
             </state>
           </provider>
         </entry>
@@ -44,6 +41,9 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -56,6 +56,7 @@
     <option name="width" value="1294" />
     <option name="height" value="1407" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -134,13 +135,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="0" width="1294" height="1407" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21735668" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32735777" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32731554" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39952904" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -154,32 +156,14 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>287</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/winequality-red.csv">
-      <provider selected="true" editor-type-id="csv-text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" column="70" lean-forward="true" selection-start-line="13" selection-start-column="70" selection-end-line="13" selection-end-column="70" />
-        </state>
-      </provider>
       <provider editor-type-id="csv-table-editor">
         <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
       </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Anaconda3/envs/UnsupervisedLearning/Lib/site-packages/matplotlib/axis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="246">
-          <caret line="1662" selection-start-line="1662" selection-end-line="1662" />
+      <provider selected="true" editor-type-id="csv-text-editor">
+        <state relative-caret-position="221">
+          <caret line="13" column="70" lean-forward="true" selection-start-line="13" selection-start-column="70" selection-end-line="13" selection-end-column="70" />
         </state>
       </provider>
     </entry>
@@ -190,16 +174,47 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/envs/UnsupervisedLearning/Lib/site-packages/sklearn/metrics/cluster/supervised.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="59" selection-start-line="59" selection-end-line="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/envs/UnsupervisedLearning/Lib/site-packages/matplotlib/axes/_axes.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="4181" selection-start-line="4181" selection-end-line="4181" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/envs/UnsupervisedLearning/Lib/site-packages/matplotlib/axis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="246">
+          <caret line="1662" selection-start-line="1662" selection-end-line="1662" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/envs/UnsupervisedLearning/Lib/site-packages/sklearn/random_projection.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="246">
+          <caret line="366" selection-start-line="366" selection-end-line="366" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="511">
-          <caret line="268" column="75" lean-forward="true" selection-start-line="268" selection-start-column="75" selection-end-line="268" selection-end-column="75" />
+        <state relative-caret-position="680">
+          <caret line="190" column="16" selection-start-line="190" selection-start-column="16" selection-end-line="190" selection-end-column="16" />
           <folding>
             <element signature="e#0#43#0" expanded="true" />
-            <element signature="e#577#673#0" />
-            <element signature="e#713#835#0" />
-            <element signature="e#1661#5127#0" />
-            <element signature="e#5200#6448#0" />
+            <element signature="e#1040#1341#0" />
+            <element signature="e#1676#5142#0" />
+            <element signature="e#5207#6375#0" />
+            <element signature="e#7098#10293#0" />
+            <element signature="e#11217#11400#0" />
+            <element signature="e#11385#11896#0" />
+            <element signature="e#11933#12342#0" />
           </folding>
         </state>
       </provider>
