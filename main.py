@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from timeit import default_timer as timer
 from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import normalize
+from sklearn.preprocessing import normalize, OneHotEncoder
 from scipy.stats import kurtosis
 import scipy.sparse as sps
 from scipy.linalg import pinv
@@ -186,9 +186,9 @@ def run_k_means(X, y, data_set, n_comp=None, best=False):
 
         kmeans_labels = best_algo.fit_predict(X)
 
-        print("Homogeneity: {0:.3f}".format(homogeneity_score(y, kmeans_labels)))
-        print("Completeness: {0:.3f}".format(completeness_score(y, kmeans_labels)))
-        print("V-measure: {0:.3f}".format(v_measure_score(y, kmeans_labels)))
+        # print("Homogeneity: {0:.3f}".format(homogeneity_score(y, kmeans_labels)))
+        # print("Completeness: {0:.3f}".format(completeness_score(y, kmeans_labels)))
+        # print("V-measure: {0:.3f}".format(v_measure_score(y, kmeans_labels)))
         return kmeans_labels
 
     # Use elbow method to choose K
@@ -240,12 +240,12 @@ def run_EM(X, y, data_set, n_comp=None, best=False):
     if best:
         best_algo = GaussianMixture(n_components=n_comp, n_init=10, init_params='random', random_state=10)
 
-        kmeans_labels = best_algo.fit_predict(X)
-
-        print("Homogeneity: {0:.3f}".format(homogeneity_score(y, kmeans_labels)))
-        print("Completeness: {0:.3f}".format(completeness_score(y, kmeans_labels)))
-        print("V-measure: {0:.3f}".format(v_measure_score(y, kmeans_labels)))
-        return kmeans_labels
+        em_labels = best_algo.fit_predict(X)
+        #
+        # print("Homogeneity: {0:.3f}".format(homogeneity_score(y, kmeans_labels)))
+        # print("Completeness: {0:.3f}".format(completeness_score(y, kmeans_labels)))
+        # print("V-measure: {0:.3f}".format(v_measure_score(y, kmeans_labels)))
+        return em_labels
 
     num_runs = 10
     init_params = 'random'  # or k-means
@@ -297,8 +297,8 @@ def run_EM(X, y, data_set, n_comp=None, best=False):
 run_clustering = False
 run_dim_reduction = False
 run_clustering_on_dim_data = False
-run_NN_on_dim_data = True
-run_NN_on_clusters = False
+run_NN_on_dim_data = False
+run_NN_on_clusters = True
 
 # select data set
 data_set = 'wine'  # data set can be either wine or loan
@@ -586,12 +586,39 @@ if __name__ == '__main__':
     if run_NN_on_clusters:
         # Clusters as new features Neural Network. Compare performance and time with assignment 1 AND compare
         # with the dim reduced neural nets
-        # Use the clustering output as the new features
-        # K means data
-        kmeans_X, kmeans_y = None, None
 
-        # EM data
-        em_X, em_y = None, None
+        # Kmeans
+        if data_set=='wine':
+            kmeans_labels = run_k_means(X, y, data_set, 4, True)
+        else:
+            kmeans_labels = run_k_means(X, y, data_set, 5, True)
 
-        run_neural_network(kmeans_X, kmeans_y)
-        run_neural_network(em_X, em_y)
+        kmeans_labels = kmeans_labels.reshape((-1, 1))
+
+        # encode labels into feature vectors
+        # K means
+        print("K Means")
+        enc = OneHotEncoder()
+        kmeans_X = enc.fit_transform(kmeans_labels)
+        X_train, X_test, y_train, y_test = split_data(kmeans_X, y, 0.2)
+        run_neural_network(X_train, X_test, y_train, y_test)
+
+        # EM
+        # Elbow method again to choose num components
+
+        if data_set == 'wine':
+            em_labels = run_EM(X, y, data_set, 9, True)
+        else:
+            em_labels = run_EM(X, y, data_set, 18, True)
+
+        em_labels = em_labels.reshape((-1, 1))
+
+        # EM
+        print("EM")
+        enc = OneHotEncoder()
+        em_X = enc.fit_transform(em_labels)
+        X_train, X_test, y_train, y_test = split_data(em_X, y, 0.2)
+        run_neural_network(X_train, X_test, y_train, y_test)
+
+        plt.show()
+

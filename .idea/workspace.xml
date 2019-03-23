@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="bcd22c72-97cc-457b-a145-26c60a9543c7" name="Default Changelist" comment="Add dim reduction dataset creation">
+    <list default="true" id="bcd22c72-97cc-457b-a145-26c60a9543c7" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -16,16 +16,20 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="693">
-              <caret line="303" column="16" selection-start-line="303" selection-start-column="16" selection-end-line="303" selection-end-column="16" />
+            <state relative-caret-position="430">
+              <caret line="34" column="41" lean-forward="true" selection-start-line="34" selection-start-column="41" selection-end-line="34" selection-end-column="41" />
               <folding>
                 <element signature="e#0#43#0" expanded="true" />
+                <element signature="e#1769#5235#0" />
+                <element signature="e#5306#6485#0" />
                 <element signature="e#6552#6910#0" />
-                <element signature="e#6975#8777#0" />
+                <element signature="e#7015#8817#0" />
                 <element signature="e#8837#10704#0" />
+                <element signature="e#11015#22695#0" />
+                <element signature="e#11408#12270#0" />
                 <element signature="e#12306#15999#0" />
                 <element signature="e#16044#19726#0" />
-                <element signature="e#21426#21827#0" />
+                <element signature="e#19993#21407#0" />
               </folding>
             </state>
           </provider>
@@ -144,7 +148,14 @@
       <option name="project" value="LOCAL" />
       <updated>1553314034933</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Add Neural Network on dim reduced data functions">
+      <created>1553357663533</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1553357663533</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -156,7 +167,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32731554" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32731554" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39952904" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -173,7 +184,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add Dim Reduction" />
     <MESSAGE value="Add dim reduction dataset creation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add dim reduction dataset creation" />
+    <MESSAGE value="Add Neural Network on dim reduced data functions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add Neural Network on dim reduced data functions" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/winequality-red.csv">
@@ -221,18 +233,29 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/envs/UnsupervisedLearning/Lib/site-packages/sklearn/utils/validation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="246">
+          <caret line="551" selection-start-line="551" selection-end-line="551" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="693">
-          <caret line="303" column="16" selection-start-line="303" selection-start-column="16" selection-end-line="303" selection-end-column="16" />
+        <state relative-caret-position="430">
+          <caret line="34" column="41" lean-forward="true" selection-start-line="34" selection-start-column="41" selection-end-line="34" selection-end-column="41" />
           <folding>
             <element signature="e#0#43#0" expanded="true" />
+            <element signature="e#1769#5235#0" />
+            <element signature="e#5306#6485#0" />
             <element signature="e#6552#6910#0" />
-            <element signature="e#6975#8777#0" />
+            <element signature="e#7015#8817#0" />
             <element signature="e#8837#10704#0" />
+            <element signature="e#11015#22695#0" />
+            <element signature="e#11408#12270#0" />
             <element signature="e#12306#15999#0" />
             <element signature="e#16044#19726#0" />
-            <element signature="e#21426#21827#0" />
+            <element signature="e#19993#21407#0" />
           </folding>
         </state>
       </provider>
