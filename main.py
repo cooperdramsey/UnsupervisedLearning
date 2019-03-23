@@ -4,7 +4,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.decomposition import PCA, FastICA, NMF, LatentDirichletAllocation, FactorAnalysis
 from sklearn.random_projection import GaussianRandomProjection, SparseRandomProjection
 from sklearn.model_selection import train_test_split, ShuffleSplit, learning_curve
-from sklearn.metrics.cluster import completeness_score, mutual_info_score, homogeneity_score, v_measure_score
+from sklearn.metrics.cluster import completeness_score, normalized_mutual_info_score, homogeneity_score, v_measure_score
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +14,6 @@ from sklearn.preprocessing import normalize
 from scipy.stats import kurtosis
 import scipy.sparse as sps
 from scipy.linalg import pinv
-from sklearn.preprocessing import MinMaxScaler
 
 
 def load_data(data_path):
@@ -154,17 +153,18 @@ def run_neural_network(X_train, X_test, y_train, y_test):
     # Check Training Time If used cross validation
 
     # For nueral network, graph training iterations to accuracy
-    plt.figure()
+    fig = plt.figure()
     plt.ylabel("Loss")
     plt.xlabel("Epochs")
     plt.title('Neural Network Loss vs Epochs')
     plt.plot(clf.loss_curve_)
-    plt.show()
 
     # Print Results
     print("Neural Network:")
     print("Train Time: {:10.6f}s".format(train_time))
     print("Accuracy: {:3.4f}%".format(acc))
+
+    return plt
 
 
 def reconstruction_error(X_train=None, X_projected=None, X=None, algo=None):
@@ -180,15 +180,128 @@ def reconstruction_error(X_train=None, X_projected=None, X=None, algo=None):
     return ((X_train - X_projected) ** 2).mean()
 
 
+def run_k_means(X, y, data_set, n_comp=None, best=False):
+    if best:
+        best_algo = KMeans(n_clusters=n_comp, init='random', n_init=10, n_jobs=-1)  # 4 clusters
+
+        kmeans_labels = best_algo.fit_predict(X)
+
+        print("Homogeneity: {0:.3f}".format(homogeneity_score(y, kmeans_labels)))
+        print("Completeness: {0:.3f}".format(completeness_score(y, kmeans_labels)))
+        print("V-measure: {0:.3f}".format(v_measure_score(y, kmeans_labels)))
+        return kmeans_labels
+
+    # Use elbow method to choose K
+    num_runs = 10
+    k = range(2, 21)
+    algo_list = [KMeans(n_clusters=num_clusters, init='random', n_init=num_runs, n_jobs=-1) for num_clusters in k]
+    score = []
+    fitted_algos = []
+    train_times = []
+
+    for algo in algo_list:
+        trained_algo, algo_score, algo_time = time_score_fit(algo, X)
+        fitted_algos.append(trained_algo)
+        score.append(algo_score)
+        train_times.append(algo_time)
+
+    # Chosen with elbow method
+    if data_set == 'wine':
+        best_algo = fitted_algos[2]  # 4 clusters
+    else:
+        best_algo = fitted_algos[3]  # 5 clusters
+
+    kmeans_labels = best_algo.predict(X)
+
+    print("Homogeneity: {0:.3f}".format(homogeneity_score(y, kmeans_labels)))
+    print("Completeness: {0:.3f}".format(completeness_score(y, kmeans_labels)))
+    print("V-measure: {0:.3f}".format(v_measure_score(y, kmeans_labels)))
+
+    # Plot scores
+    # plt.title('K vs Inertia for K-Means')
+    # plt.xlabel('k value')
+    # plt.ylabel('Inertia')
+    # plt.xticks(range(min(k), max(k) + 1, 1))
+    # plt.plot(k, score)
+    # plt.show()
+    #
+    # # Plot Train times
+    # plt.title('K vs Train time for K-means')
+    # plt.xlabel('k value')
+    # plt.ylabel('Train time (s)')
+    # plt.xticks(range(min(k), max(k) + 1, 1))
+    # plt.plot(k, train_times)
+    # plt.show()
+
+    return kmeans_labels
+
+
+def run_EM(X, y, data_set, n_comp=None, best=False):
+    if best:
+        best_algo = GaussianMixture(n_components=n_comp, n_init=10, init_params='random', random_state=10)
+
+        kmeans_labels = best_algo.fit_predict(X)
+
+        print("Homogeneity: {0:.3f}".format(homogeneity_score(y, kmeans_labels)))
+        print("Completeness: {0:.3f}".format(completeness_score(y, kmeans_labels)))
+        print("V-measure: {0:.3f}".format(v_measure_score(y, kmeans_labels)))
+        return kmeans_labels
+
+    num_runs = 10
+    init_params = 'random'  # or k-means
+    k = range(2, 21)
+    algo_list = [GaussianMixture(n_components=num_components, n_init=num_runs, init_params=init_params, random_state=10)
+                 for num_components in k]
+    score = []
+    fitted_algos = []
+    train_times = []
+    for algo in algo_list:
+        trained_algo, algo_score, algo_time = time_score_fit(algo, X)
+        fitted_algos.append(trained_algo)
+        score.append(algo_score)
+        train_times.append(algo_time)
+
+    # Choose algo with best score
+    best_score = min(score)
+    index = 0
+    best_algo = None
+    for i in score:
+        if i == best_score:
+            best_algo = fitted_algos[index]
+        index += 1
+
+    em_labels = best_algo.predict(X)
+    print("Homogeneity: {0:.3f}".format(homogeneity_score(y, em_labels)))
+    print("Completeness: {0:.3f}".format(completeness_score(y, em_labels)))
+    print("V-measure: {0:.3f}".format(v_measure_score(y, em_labels)))
+
+    # Plot scores
+    # plt.title('K vs BIC for EM')
+    # plt.xlabel('k value')
+    # plt.ylabel('Score')
+    # plt.xticks(range(min(k), max(k) + 1, 2))
+    # plt.plot(k, score)
+    # plt.show()
+    #
+    # # Plot Train times
+    # plt.title('K vs Train time for EM')
+    # plt.xlabel('k value')
+    # plt.ylabel('Train time (s)')
+    # plt.xticks(range(min(k), max(k) + 1, 2))
+    # plt.plot(k, train_times)
+    # plt.show()
+    return em_labels
+
+
 # Choose which parts to run
 run_clustering = False
 run_dim_reduction = False
 run_clustering_on_dim_data = False
-run_NN_on_dim_data = False
+run_NN_on_dim_data = True
 run_NN_on_clusters = False
 
 # select data set
-data_set = 'loan'  # data set can be either wine or loan
+data_set = 'wine'  # data set can be either wine or loan
 
 if __name__ == '__main__':
     # Load data
@@ -213,95 +326,22 @@ if __name__ == '__main__':
         # Don't use these labels to choose K this is cheating, BUT use these labels to validate my choice
         # cluster validation: If k matches the number of classes I have in the data, I can measure the error.
 
-        # Use elbow method to choose K
-        num_runs = 10
-        k = range(2, 21)
-        algo_list = [KMeans(n_clusters=num_clusters, init='random', n_init=num_runs, n_jobs=-1) for num_clusters in k]
-        score = []
-        fitted_algos = []
-        train_times = []
-
-        for algo in algo_list:
-            trained_algo, algo_score, algo_time = time_score_fit(algo, X)
-            fitted_algos.append(trained_algo)
-            score.append(algo_score)
-            train_times.append(algo_time)
-
-        # Chosen with elbow method
-        if data_set == 'wine':
-            best_algo = fitted_algos[2]  # 4 clusters
+        if data_set=='wine':
+            kmeans_labels_orig = run_k_means(X, y, data_set, 4, True)
         else:
-            best_algo = fitted_algos[3]  # 5 clusters
-
-        kmeans_labels = best_algo.predict(X)
-
-        print("Homogeneity: {0:.3f}".format(homogeneity_score(y, kmeans_labels)))
-        print("Completeness: {0:.3f}".format(completeness_score(y, kmeans_labels)))
-        print("V-measure: {0:.3f}".format(v_measure_score(y, kmeans_labels)))
-
-        # Plot scores
-        plt.title('K vs Inertia for K-Means')
-        plt.xlabel('k value')
-        plt.ylabel('Inertia')
-        plt.xticks(range(min(k), max(k) + 1, 1))
-        plt.plot(k, score)
-        plt.show()
-
-        # Plot Train times
-        plt.title('K vs Train time for K-means')
-        plt.xlabel('k value')
-        plt.ylabel('Train time (s)')
-        plt.xticks(range(min(k), max(k) + 1, 1))
-        plt.plot(k, train_times)
-        plt.show()
+            kmeans_labels_orig = run_k_means(X, y, data_set, 5, True)
 
         # EM
         # Elbow method again to choose num components
-        num_runs = 10
-        init_params = 'random' # or k-means
-        k = range(2, 21)
-        algo_list = [GaussianMixture(n_components=num_components, n_init=num_runs, init_params=init_params, random_state=10) for num_components in k]
-        score = []
-        fitted_algos = []
-        train_times = []
-        for algo in algo_list:
-            trained_algo, algo_score, algo_time = time_score_fit(algo, X)
-            fitted_algos.append(trained_algo)
-            score.append(algo_score)
-            train_times.append(algo_time)
 
-        # Choose algo with best score
-        best_score = min(score)
-        index = 0
-        best_algo = None
-        for i in score:
-            if i == best_score:
-                best_algo = fitted_algos[index]
-            index += 1
-
-        em_labels = best_algo.predict(X)
-        print("Homogeneity: {0:.3f}".format(homogeneity_score(y, em_labels)))
-        print("Completeness: {0:.3f}".format(completeness_score(y, em_labels)))
-        print("V-measure: {0:.3f}".format(v_measure_score(y, em_labels)))
-
-        # Plot scores
-        plt.title('K vs BIC for EM')
-        plt.xlabel('k value')
-        plt.ylabel('Score')
-        plt.xticks(range(min(k), max(k) + 1, 2))
-        plt.plot(k, score)
-        plt.show()
-
-        # Plot Train times
-        plt.title('K vs Train time for EM')
-        plt.xlabel('k value')
-        plt.ylabel('Train time (s)')
-        plt.xticks(range(min(k), max(k) + 1, 2))
-        plt.plot(k, train_times)
-        plt.show()
+        if data_set == 'wine':
+            em_labels_orig = run_EM(X, y, data_set, 9, True)
+        else:
+            em_labels_orig = run_EM(X, y, data_set, 18, True)
 
         # Compare clusters
-        print("Mutual Info Score: {0:.3f}".format(mutual_info_score(kmeans_labels, em_labels)))
+        print("Mutual Info Score ORIG: {0:.3f}".format(normalized_mutual_info_score(kmeans_labels_orig, em_labels_orig)))
+        print()
 
     if run_dim_reduction:
         # Dim reduction Show projections. Visual just the first few components.
@@ -403,47 +443,145 @@ if __name__ == '__main__':
         # PCA
         if data_set == 'wine':
             n_comp = 5
+            k_comp = 4
+            em_comp = 5
+        else:
+            n_comp = 10
+            k_comp = 5
+            em_comp = 10
+        pca = PCA(random_state=10, n_components=n_comp)
+        pca_X = pca.fit_transform(X)
+
+        #Cluster
+        print("PCA:")
+        kmeans_labels_orig = run_k_means(X, y, data_set, k_comp, True)
+        kmeans_labels = run_k_means(pca_X, y, data_set, k_comp, True)
+        em_labels_orig = run_EM(X, y, data_set, em_comp, True)
+        em_labels = run_EM(pca_X, y, data_set, em_comp, True)
+        # Compare clusters
+        print("PCA K means Mutual Info Score: {0:.3f}".format(normalized_mutual_info_score(kmeans_labels, kmeans_labels_orig)))
+        print("PCA EM Mutual Info Score: {0:.3f}".format(normalized_mutual_info_score(em_labels, em_labels_orig)))
+        print()
+
+        #ICA
+        if data_set == 'wine':
+            n_comp = 6
+            k_comp = 4
+            em_comp = 6
+        else:
+            n_comp = 12
+            k_comp = 5
+            em_comp = 12
+        ica = FastICA(random_state=10, n_components=n_comp)
+        ica_X = ica.fit_transform(X)
+
+        #Cluster
+        print("ICA:")
+        kmeans_labels_orig = run_k_means(X, y, data_set, k_comp, True)
+        kmeans_labels = run_k_means(ica_X, y, data_set, k_comp, True)
+        em_labels_orig = run_EM(X, y, data_set, em_comp, True)
+        em_labels = run_EM(ica_X, y, data_set, em_comp, True)
+        # Compare clusters
+        print("ICA K means Mutual Info Score: {0:.3f}".format(normalized_mutual_info_score(kmeans_labels, kmeans_labels_orig)))
+        print("ICA EM Mutual Info Score: {0:.3f}".format(normalized_mutual_info_score(em_labels, em_labels_orig)))
+        print()
+
+        # RP
+        if data_set == 'wine':
+            n_comp = 7
+            k_comp = 4
+            em_comp = 7
+        else:
+            n_comp = 14
+            k_comp = 5
+            em_comp = 14
+        rp = SparseRandomProjection(n_components=n_comp)
+        rp_X = rp.fit_transform(X)
+
+        #Cluster
+        print("RP:")
+        kmeans_labels_orig = run_k_means(X, y, data_set, k_comp, True)
+        kmeans_labels = run_k_means(rp_X, y, data_set, k_comp, True)
+        em_labels_orig = run_EM(X, y, data_set, em_comp, True)
+        em_labels = run_EM(rp_X, y, data_set, em_comp, True)
+        # Compare clusters
+        print("RP K means Mutual Info Score: {0:.3f}".format(normalized_mutual_info_score(kmeans_labels, kmeans_labels_orig)))
+        print("RP EM Mutual Info Score: {0:.3f}".format(normalized_mutual_info_score(em_labels, em_labels_orig)))
+        print()
+
+        # FA
+        if data_set == 'wine':
+            n_comp = 6
+            k_comp = 4
+            em_comp = 6
+        else:
+            n_comp = 14
+            k_comp = 5
+            em_comp = 14
+        fa = FactorAnalysis(n_components=n_comp)
+        fa_X = fa.fit_transform(X)
+
+        #Cluster
+        print("FA:")
+        kmeans_labels_orig = run_k_means(X, y, data_set, k_comp, True)
+        kmeans_labels = run_k_means(fa_X, y, data_set, k_comp, True)
+        em_labels_orig = run_EM(X, y, data_set, em_comp, True)
+        em_labels = run_EM(fa_X, y, data_set, em_comp, True)
+        # Compare clusters
+        print("FA K means Mutual Info Score: {0:.3f}".format(normalized_mutual_info_score(kmeans_labels, kmeans_labels_orig)))
+        print("FA EM Mutual Info Score: {0:.3f}".format(normalized_mutual_info_score(em_labels, em_labels_orig)))
+
+    # Make sure to hold out a test set for this part
+    # Train Model
+    #X_train, X_test, y_train, y_test = split_data(X, y, 0.2)
+    # only do the dim reduction and clusters on the training set
+    # will need to re-cluster these thing
+    if run_NN_on_dim_data:
+        # PCA
+        print("PCA:")
+        if data_set == 'wine':
+            n_comp = 5
         else:
             n_comp = 10
         pca = PCA(random_state=10, n_components=n_comp)
         pca_X = pca.fit_transform(X)
+        X_train, X_test, y_train, y_test = split_data(pca_X, y, 0.2)
+        run_neural_network(X_train, X_test, y_train, y_test)
 
-        #ICA
+        # ICA
+        print("ICA:")
         if data_set == 'wine':
             n_comp = 6
         else:
             n_comp = 12
         ica = FastICA(random_state=10, n_components=n_comp)
         ica_X = ica.fit_transform(X)
+        X_train, X_test, y_train, y_test = split_data(ica_X, y, 0.2)
+        run_neural_network(X_train, X_test, y_train, y_test)
 
         # RP
+        print("RP:")
         if data_set == 'wine':
             n_comp = 7
         else:
             n_comp = 14
-        sp = SparseRandomProjection(n_components=n_comp)
-        sp_X = sp.fit_transform(X)
+        rp = SparseRandomProjection(n_components=n_comp)
+        rp_X = rp.fit_transform(X)
+        X_train, X_test, y_train, y_test = split_data(rp_X, y, 0.2)
+        run_neural_network(X_train, X_test, y_train, y_test)
 
         # FA
+        print("FA:")
         if data_set == 'wine':
             n_comp = 6
         else:
             n_comp = 14
         fa = FactorAnalysis(n_components=n_comp)
         fa_X = fa.fit_transform(X)
+        X_train, X_test, y_train, y_test = split_data(fa_X, y, 0.2)
+        run_neural_network(X_train, X_test, y_train, y_test)
 
-    if run_NN_on_dim_data:
-        # Make sure to hold out a test set for this part
-        # Train Model
-        X_train, X_test, y_train, y_test = split_data(X, y, 0.2)
-        # only do the dim reduction and clusters on the training set
-        # will need to re-cluster these things
-
-        # Run Neural network on reduced data. Compare performance and time with assignment 1
-        run_neural_network(pca_X, pca_y)
-        run_neural_network(ica_X, ica_y)
-        run_neural_network(rp_X, rp_y)
-        run_neural_network(lda_X, lda_y)
+        plt.show()
 
     if run_NN_on_clusters:
         # Clusters as new features Neural Network. Compare performance and time with assignment 1 AND compare
